@@ -1,0 +1,106 @@
+//leetcode 139
+    public boolean wordBreak(String s, List<String> wordDict) {
+        int n = s.length();
+        HashSet<String> set = new HashSet<>();
+        int ml = 0;
+        for(String ss : wordDict){
+            set.add(ss);
+            ml = Math.max(ml , ss.length());
+        }
+        
+        boolean [] dp = new boolean[n+1];
+        dp[0] = true;
+        for(int i = 0; i<=n; i++){
+            if(dp[i]==true){
+                
+                for(int l = 1; l<=ml+i && i+l<=n; l++){
+                    String subs = s.substring(i,i+l);
+                    if(set.contains(subs)){
+                        dp[i+l] = true;
+                    }
+                }
+            }
+            if(dp[n]==true) return true;
+        }
+        return false;
+    }
+//leetcode 140
+
+public List<String> wordBreak(String s, List<String> wordDict) {
+        HashSet<String> set = new HashSet();
+        int maxLen = 0;
+        for(String ss : wordDict){
+            set.add(ss);
+            maxLen = Math.max(maxLen , ss.length());
+        }
+        int n = s.length();
+        boolean[] dp = new boolean[n+1];
+        dp[0] = true;
+        for(int i = 0; i<=n; i++){
+            if(dp[i]==true){
+                
+                for(int l = 1; l<=maxLen && i+l<=n; l++){
+                   String sbs =  s.substring(i,i+l);
+                   if(set.contains(sbs)){
+                      dp[i+l] = true; 
+                     }
+                }
+                
+            }
+        }
+        List<String> ans = new ArrayList<>();
+        if(dp[n]==false) return ans;
+        helper(ans,0,"",s,set,dp,maxLen);
+        return ans;
+    }
+    public void helper(List<String> ans,int i,String asf,String s,HashSet<String> set,boolean[] dp,int maxLen){
+        if(i>=s.length()){
+           ans.add(asf.substring(0,asf.length()-1));
+            return;
+        }
+        
+        for(int l = 1; l<=maxLen && i+l<=s.length(); l++){
+            if(dp[i+l]){
+                String ss = s.substring(i,i+l);
+                if(set.contains(ss)){
+                   helper(ans,i+l,asf+ss+" ",s,set,dp,maxLen); 
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    // zer one knapsack
+    
+     public static void main(String[] args) throws Exception {
+       Scanner scn = new Scanner(System.in);
+       int n = scn.nextInt();
+        int[] values = new int[n];
+        for(int i = 0; i<n; i++) values[i]  = scn.nextInt();  
+     
+     
+        int[] weight = new int[n];
+        for(int i = 0; i<n; i++) weight[i]  = scn.nextInt(); 
+        
+        int capacity = scn.nextInt();
+        int [][] dp = new int[n+1][capacity+1];
+        for(int i = 1; i<=n; i++){
+            for(int cap = 1; cap<=capacity; cap++){
+                int val = values[i-1];
+                int wt = weight[i-1];
+                if(cap>=wt){
+                    int inc = val+dp[i-1][cap-wt];
+                    int exc = dp[i-1][cap];
+                    dp[i][cap] = Math.max(inc,exc);
+                    
+                }else{
+                    // exclude
+                    dp[i][cap]=dp[i-1][cap];
+                }
+                
+            }
+        }
+        System.out.println(dp[n][capacity]);
+    }
