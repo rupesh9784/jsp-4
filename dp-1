@@ -104,3 +104,68 @@ public List<String> wordBreak(String s, List<String> wordDict) {
         }
         System.out.println(dp[n][capacity]);
     }
+    
+    //leetcode 300
+    
+    int fans;
+    public int lengthOfLIS(int[] nums) {
+        // fans = 1;
+        // LIS_rec(nums,nums.length-1,new int[nums.length] );
+        // return fans;
+        return LIS_tab(nums);
+    }
+     public int LIS_rec(int[] nums , int ei,int[] dp){
+        if(ei==0){
+            return dp[ei] = 1;
+        }
+        if(dp[ei] != 0) return dp[ei];
+        int len = 1;
+        for(int si = 0; si<= ei-1; si++){
+            int rec = LIS_rec(nums,si,dp);
+            if(nums[si]<nums[ei]){
+                len = Math.max(rec+1,len);
+            }
+        }
+        fans = Math.max(fans,len);
+        return dp[ei] = len;
+    }
+    public int LIS_tab(int[] nums){
+        
+        int ans = 1;
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp,1);
+        for(int ei = 1; ei<nums.length; ei++){
+           for(int si = 0; si<ei; si++){
+               if(nums[si]<nums[ei]){
+                   dp[ei] = Math.max(dp[si]+1,dp[ei]);
+               }
+           }
+            ans = Math.max(ans , dp[ei]);
+        }
+        return ans;
+        
+    }
+    
+    //unbounded knapsack
+           
+           int[] dp = new int[capacity+1];
+           
+           for(int cap = 1; cap<=capacity; cap++){
+               int max= 0;
+               for(int i = 0; i<n; i++){
+                   int vl = values[i];
+                   int wt = weight[i];
+                   if(cap>=wt){  //check item
+                      int amt = vl+dp[cap-wt];
+                      if(max<amt){
+                          max = amt;
+                      }
+                   }
+               }
+               
+               dp[cap] = max;
+           }
+           
+           System.out.println(dp[capacity]);
+           
+           
