@@ -167,5 +167,130 @@ public List<String> wordBreak(String s, List<String> wordDict) {
            }
            
            System.out.println(dp[capacity]);
-           
-           
+//longest bitonic subsequence           
+     public int LongestBitonicSequence(int[] nums)
+    {
+        int n = nums.length;
+        int [] LIS = new int[n];
+        int [] LDS = new int[n];
+        LIS_LR(nums , LIS);
+        LIS_RL(nums, LDS);
+        int ans = 0;
+        for(int i =0; i<n; i++){
+            ans = Math.max(ans,LIS[i]+LDS[i] - 1);
+        }
+        return ans;
+    }
+    
+    public void LIS_LR(int[] nums,int[] dp){
+        Arrays.fill(dp,1);
+        int n = nums.length;
+        for(int ei = 0; ei<n; ei++){
+          for(int si = 0; si<ei; si++){
+              if(nums[si] <nums[ei]){
+                 dp[ei] = Math.max(dp[si]+1,dp[ei]);
+              }
+          }   
+        }
+        
+    }
+    public void LIS_RL(int[] nums,int[] dp){
+        Arrays.fill(dp,1);
+        int n = nums.length;
+        for(int ei = n-1; ei>=0; ei--){
+          for(int si = ei+1; si<n; si++){
+              if(nums[si] <nums[ei]){
+                 dp[ei] = Math.max(dp[si]+1,dp[ei]);
+              }
+          }   
+        }
+        
+    }
+   //leetcode 673 
+    public int findNumberOfLIS(int[] nums) {
+        int maxLen = 1,maxCount = 1;
+        int n = nums.length;
+        int [] dp = new int[n];
+        int count[] = new int[n];
+        Arrays.fill(dp,1);
+        Arrays.fill(count,1);
+        for(int ei = 1; ei<n; ei++){
+            for(int si = 0; si<ei; si++){
+                if(nums[si]<nums[ei]){
+                    if(dp[si]+1>dp[ei]){
+                        dp[ei] = dp[si]+1;
+                        count[ei]=count[si];
+                    } else if(dp[si]+1==dp[ei]){
+                        count[ei]+=count[si];
+                    }
+                }
+            }
+            if(dp[ei]>maxLen){
+                maxLen = dp[ei];
+                maxCount = count[ei];
+            }else if(dp[ei]==maxLen){
+                maxCount+=count[ei];
+            }
+            
+        }
+        
+        return maxCount;
+    }
+    
+    // leetcode 354
+    
+     public class Pair implements Comparable<Pair> {
+        int w;
+        int h;
+        Pair(int w , int h){
+            this.w = w;
+            this.h = h;
+        }
+        public int compareTo(Pair O){
+         if( this.w != O.w) return this.w - O.w; //sort width in increasing order
+        else return O.h- this.h;  //sort height in decreasing order
+        }
+    }
+    
+    public int maxEnvelopes(int[][] envelopes) {
+         
+        int n = envelopes.length;
+        Pair[] arr = new Pair[n];
+        for(int i=0; i<n; i++){
+        arr[i] = new Pair(envelopes[i][0] , envelopes[i][1]);
+        }
+        
+        Arrays.sort(arr);
+        
+        int[] dp = new int[n];
+        // LIS
+        int ans =0;
+        for(int ei = 1; ei<n; ei++){
+           for(int si = 0; si<ei; si++){
+               if(arr[si].h < arr[ei].h && dp[si]+1 > dp[ei]){
+                   dp[ei] = dp[si]+1;
+               }
+               
+           }
+            ans = Math.max(ans,dp[ei]);
+        }
+        
+        return ans+1;
+    }
+    
+    leetcode 377
+    
+    public int combinationSum4(int[] nums, int amt) {
+        int[] dp = new int[amt+1];
+        dp[0] = 1;
+        for(int i = 0; i<dp.length; i++){
+            for(int coin : nums){
+                if(coin<=i){
+                    dp[i] += dp[i-coin];
+                }   
+            }
+        }
+        
+        return dp[amt];
+    }
+    
