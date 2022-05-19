@@ -294,3 +294,119 @@ public List<String> wordBreak(String s, List<String> wordDict) {
         return dp[amt];
     }
     
+    //leetcode 322
+    
+    public int coinChange(int[] coins, int amt) {
+       // return rec(coins, amt,new int[amt+1]);
+        return tab(coins,amt);
+    }
+    public int rec(int[] coins, int amt , int[] dp){
+        if(amt<0) return -1;
+        if(amt==0) return 0;
+        
+        if(dp[amt]!=0) return dp[amt];
+        
+        int min = Integer.MAX_VALUE;
+        for(int coin : coins){
+           int x = rec(coins , amt - coin, dp);
+            if(x>=0 && x<min){
+               min = x+1;  // count for current coin
+            }
+        }
+        
+        return dp[amt] = (min==Integer.MAX_VALUE) ? -1 : min;
+        
+    }
+    public int tab(int[] coins , int amt){
+        int[] dp = new int[amt+1];
+        Arrays.fill(dp, (int)1e9);
+        dp[0] = 0;
+        for(int i =0; i<=amt; i++){
+            for(int coin : coins){
+               if(i-coin>=0) dp[i] = Math.min(dp[i] , dp[i-coin]+1);
+            }
+        }
+        if(dp[amt] != (int)1e9) return dp[amt];
+        return -1;
+    }
+    
+    //Subset Sum Problem
+    
+    static Boolean isSubsetSum(int N, int arr[], int sum){
+        boolean[][] dp = new boolean[N+1][sum+1];
+        
+        for(int i=0; i<=N; i++){
+            for(int tar = 0; tar<=sum; tar++){
+                if(tar==0) dp[i][tar] = true;
+                else if(i==0) dp[i][tar] = false;
+                else{
+                    if(tar-arr[i-1]>=0){
+                        dp[i][tar] = dp[i-1][tar] || dp[i-1][tar-arr[i-1]];
+                    }else{
+                        dp[i][tar] = dp[i-1][tar];  //exclude 
+                    }
+                    
+                }
+            }
+        }
+        
+        return dp[N][sum];
+    }
+    
+    //leetcode 416
+    
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        int n = nums.length;
+        for(int num : nums) sum+=num;
+        
+        if(sum%2!=0 || n==1) return false;
+        
+        return isSubsetSum(n , nums, sum/2);
+    }
+    public Boolean isSubsetSum(int N, int arr[], int sum){
+        boolean[] dp = new boolean[sum+1];
+        dp[0] = true;
+        for(int num : arr){
+            for(int tar = sum; tar>0; tar--){
+               if(tar-num>=0) dp[tar] = dp[tar-num] || dp[tar];   
+            }
+            if(dp[sum]==true) return true;
+        }
+        
+        return dp[sum];
+    }
+    
+    // leetcode 494
+    
+    public int findTargetSumWays(int[] nums, int target) {
+        int n = nums.length;
+        int s = 0;
+        for(int num : nums){
+            s+=num;
+        }
+        if(target>s || target < -s) return 0;
+        
+         int[][] dp = new int[n+1][2*s+1];
+        for(int[] d : dp){
+            Arrays.fill(d,-1);
+        }
+        
+        return targetSumSubset(n,nums,target+s,s,dp);
+    }
+    
+    public int targetSumSubset(int idx, int[] nums ,int target,int sum,int[][] dp){
+        if(idx==0){
+           if(sum==target) return dp[idx][sum]=1;
+           return dp[idx][sum]=0;
+        }
+         if(dp[idx][sum] != -1) return dp[idx][sum]; 
+         int count = 0;
+         count+=targetSumSubset(idx-1,nums,target,sum+nums[idx-1],dp);
+         count+=targetSumSubset(idx-1,nums,target,sum-nums[idx-1],dp);
+        
+        return dp[idx][sum]=count;
+    }
+    
+    
+    
